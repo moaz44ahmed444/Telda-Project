@@ -7,6 +7,7 @@ import com.telda.telda_project.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,5 +43,16 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<Transaction> getTransactionsByReceiver(User receiver) {
         return transactionRepository.findByReceiver(receiver);
+    }
+
+    public  List<Transaction> getUserTransactions(User user) {
+        List<Transaction> sent = transactionRepository.findBySender(user);
+        List<Transaction> received = transactionRepository.findByReceiver(user);
+
+        List<Transaction> all = new ArrayList<>();
+        all.addAll(sent);
+        all.addAll(received);
+
+        return all;
     }
 }

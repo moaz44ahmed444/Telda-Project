@@ -7,9 +7,11 @@ import com.telda.telda_project.entity.User;
 import com.telda.telda_project.enums.TransactionType;
 import com.telda.telda_project.service.TransactionService;
 import com.telda.telda_project.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -33,8 +35,9 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<String> sendMoney(@RequestBody TransactionRequest request) {
-        Optional<User> senderOpt = userService.getUserById(request.getSenderId());
+    public ResponseEntity<String> sendMoney(@Valid @RequestBody TransactionRequest request, Authentication authentication) {
+        String email = authentication.getName();
+        Optional<User> senderOpt = userService.getUserByEmail(email);
         Optional<User> receiverOpt = userService.getUserById(request.getReceiverId());
 
         if (senderOpt.isEmpty() || receiverOpt.isEmpty()) {
@@ -45,12 +48,13 @@ public class TransactionController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Amount must be greater than 0");
         }
 
-        if (request.getSenderId().equals(request.getReceiverId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Sender and Receiver cannot be the same");
-        }
-
         User sender = senderOpt.get();
         User receiver = receiverOpt.get();
+
+
+        if (sender.getId().equals(receiver.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Sender and Receiver cannot be the same");
+        }
 
         if (sender.getBalance() < request.getAmount()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Insufficient funds");
@@ -81,15 +85,17 @@ public class TransactionController {
         return transactionService.getTransactionsBySender(user.get());
     }*/
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<TransactionResponse>> getUserTransactions(@PathVariable Long userId) {
-        Optional<User> user = userService.getUserById(userId);
+    @GetMapping("/user/transactions")
+    public ResponseEntity<List<TransactionResponse>> getUserTransactions(Authentication authentication) {
+        String email = authentication.getName();
+        Optional<User> userOpt = userService.getUserByEmail(email);
 
-        if (user.isEmpty()) {
+        if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        List<Transaction> transactions = transactionService.getTransactionsBySender(user.get());
+        User user = userOpt.get();
+        List<Transaction> transactions = transactionService.getUserTransactions(user);
 
         List<TransactionResponse> response = transactions.stream().map(tx ->
                 TransactionResponse.builder()
@@ -104,7 +110,7 @@ public class TransactionController {
 
         return ResponseEntity.ok(response);
     }
-
+/*
     @GetMapping("/user/{suerId}/all")
     public ResponseEntity<List<TransactionResponse>> getAllUserTransactions(@PathVariable Long suerId) {
         Optional<User> userOpt = userService.getUserById(suerId);
@@ -136,10 +142,11 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
-
+*/
     @PostMapping("/deposit")
-    public ResponseEntity<String> deposit(@RequestBody TransactionRequest request) {
-        Optional<User> userOpt = userService.getUserById(request.getReceiverId());
+    public ResponseEntity<String> deposit(@Valid @RequestBody TransactionRequest request, Authentication  authentication) {
+        String email = authentication.getName();
+        Optional<User> userOpt = userService.getUserByEmail(email);
 
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -167,8 +174,9 @@ public class TransactionController {
     }
 
     @PostMapping("/withdraw")
-    public ResponseEntity<String> withdraw(@RequestBody TransactionRequest request) {
-        Optional<User> userOpt = userService.getUserById(request.getSenderId());
+    public ResponseEntity<String> withdraw(@Valid @RequestBody TransactionRequest request, Authentication authentication) {
+        String email = authentication.getName();
+        Optional<User> userOpt = userService.getUserByEmail(email);
 
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

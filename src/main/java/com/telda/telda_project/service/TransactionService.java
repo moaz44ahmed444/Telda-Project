@@ -12,4 +12,6 @@ public interface TransactionService {
     List<Transaction> getAllTransactions();
     List<Transaction> getTransactionsBySender(User sender);
     List<Transaction> getTransactionsByReceiver(User receiver);
-}
+    List<Transaction> getUserTransactions(User user);
+
+    }

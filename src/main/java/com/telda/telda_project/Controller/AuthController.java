@@ -2,9 +2,15 @@ package com.telda.telda_project.Controller;
 
 import com.telda.telda_project.dto.AuthRequest;
 import com.telda.telda_project.dto.AuthResponse;
+import com.telda.telda_project.dto.LoginRequest;
+import com.telda.telda_project.dto.LoginResponse;
 import com.telda.telda_project.entity.User;
 import com.telda.telda_project.service.UserService;
+import com.telda.telda_project.serviceImpl.AuthenticationService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,37 +22,40 @@ import java.util.Optional;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final UserService userService;
+    private final AuthenticationService authenticationService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, AuthenticationService authenticationService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.authenticationService = authenticationService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/signup")
-    public AuthResponse register(@RequestBody AuthRequest request) {
+    public ResponseEntity<LoginResponse> register(@RequestBody AuthRequest request) {
         Optional<User> existingUser = userService.getUserByEmail(request.getEmail());
         if (existingUser.isPresent()) {
-            return new AuthResponse("User Already Exist", existingUser.get().getId());
+            return ResponseEntity.badRequest().build();
         }
 
         User newUser = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .balance(0.0)
                 .build();
 
         User  savedUser = userService.saveUser(newUser);
-        return new AuthResponse("Signup successful", savedUser.getId());
+
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail(request.getEmail());
+        loginRequest.setPassword(request.getPassword());
+        return ResponseEntity.ok(authenticationService.authentication(loginRequest));
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody AuthRequest request) {
-        Optional<User> existingUser = userService.getUserByEmail(request.getEmail());
-        if (existingUser.isEmpty() || !existingUser.get().getPassword().equals(request.getPassword())) {
-            return new AuthResponse("Invalid Credentials", null);
-        }
-
-        return new AuthResponse("Login successful", existingUser.get().getId());
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authenticationService.authentication(request));
     }
 }

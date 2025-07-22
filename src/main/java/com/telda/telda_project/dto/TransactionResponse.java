@@ -16,4 +16,3 @@ public class TransactionResponse {
     private TransactionType type;
     private LocalDateTime timestamp;
 }
-
