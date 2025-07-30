@@ -1,18 +1,22 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <header>
+  <v-app>
+    <v-app-bar app color="primary" dark>
+      <v-toolbar-title>Telda</v-toolbar-title>
 
-    <div class="wrapper">
-      <nav>
-        <RouterLink to="/login">Login</RouterLink>
-      </nav>
-    </div>
-  </header>
+      <v-spacer></v-spacer>
 
-  <RouterView />
+      <v-btn text to="/login" router>Login</v-btn>
+      <v-btn text to="/signup" router>Sign Up</v-btn>
+    </v-app-bar>
+
+    <v-main>
+      <RouterView />
+    </v-main>
+  </v-app>
 </template>
 
 <style scoped>

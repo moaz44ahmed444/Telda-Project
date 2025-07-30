@@ -33,6 +33,7 @@ public class AuthenticationService {
 
             return LoginResponse.builder()
                     .token(token)
+                    .name(user.getName())
                     .build();
         } catch (AuthenticationException ex){
             throw new RuntimeException("Invalid email or password");

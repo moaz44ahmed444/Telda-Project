@@ -32,6 +32,7 @@ public class UserController {
         User user = userOpt.get();
 
         Map<String, Object> response = new HashMap<>();
+        response.put("name",  user.getName());
         response.put("userId", user.getId());
         response.put("balance", user.getBalance());
 

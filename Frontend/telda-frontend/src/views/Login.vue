@@ -36,7 +36,9 @@ export default{
                 });
 
                 const token = response.data.token;
-                localStorage.setItem("token",token);
+                const userName = response.data.name;
+                localStorage.setItem("token", token);
+                localStorage.setItem("name", userName);
 
                 console.log("Login successfull", response.data);
 
