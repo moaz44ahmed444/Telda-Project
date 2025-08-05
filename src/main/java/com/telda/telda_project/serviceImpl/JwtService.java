@@ -15,6 +15,7 @@ import java.util.Date;
 public class JwtService {
     private static final String SECRET_KEY = "736F6D65536563726574506C61696E54657874546861744973566572794C6F6E67";
 
+
     public String generateToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getEmail())
