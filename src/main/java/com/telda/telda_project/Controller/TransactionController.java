@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -23,22 +24,22 @@ import java.util.Optional;
 @RequestMapping("/api/transaction")
 public class TransactionController {
 
-    private final TransactionService transactionService;
-    private final UserService userService;
-
-
 
     @Autowired
-    public TransactionController(TransactionService transactionService, UserService userService) {
-        this.transactionService = transactionService;
-        this.userService = userService;
-    }
+    private TransactionService transactionService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     @PostMapping
-    public ResponseEntity<String> sendMoney(@Valid @RequestBody TransactionRequest request, Authentication authentication) {
+    public ResponseEntity<String> sendMoney( @RequestBody TransactionRequest request, Authentication authentication) {
         String email = authentication.getName();
         Optional<User> senderOpt = userService.getUserByEmail(email);
-        Optional<User> receiverOpt = userService.getUserById(request.getReceiverId());
+        Optional<User> receiverOpt = userService.getUserByEmail(request.getReceiverEmail());
 
         if (senderOpt.isEmpty() || receiverOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sender or Receiver not found");
@@ -191,6 +192,11 @@ public class TransactionController {
         if (user.getBalance() < request.getAmount()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Insufficient Balance");
         }
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password");
+        }
+
         user.setBalance(user.getBalance() - request.getAmount());
         userService.saveUser(user);
 

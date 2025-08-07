@@ -8,12 +8,14 @@ import jakarta.validation.constraints.Min;
 @Data
 public class TransactionRequest {
 
-    @NotNull(message = "Receiver Id Not valid")
-    private Long receiverId;
+    @NotNull(message = "Receiver Email is Not valid")
+    private String receiverEmail;
 
     @NotNull(message = "Amount is required")
     @Min(value = 1, message = "Amount must be greater than 0")
     private Double amount;
 
     private TransactionType type;
+
+    private String Password;
 }
