@@ -1,30 +1,38 @@
 <script setup>
 import { jwtDecode } from 'jwt-decode';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { RouterView, useRouter } from 'vue-router'
 
 const router = useRouter();
-const isLoggedIn = ref(false);
+const token = ref(localStorage.getItem("token"))
 
-onMounted(() => {
-  const token = localStorage.getItem("token");
-  if (token){
-    try {
-      const decode = jwtDecode(token);
-      const exp = decode.exp * 1000;
-
-      isLoggedIn.value = Date.now() < exp;
+const isLoggedIn = computed(() => {
+  if(!token.value) return false;
+  try{
+      const decoded = jwtDecode(token.value);
+      return Date.now() < decoded.exp * 1000;
     } catch {
-      isLoggedIn.value = false;
+      return false;
     }
   }
-});
+);
+
 
 function logout(){
   localStorage.removeItem("token");
-  isLoggedIn.value = false;
+  token.value = null;
   router.push("/login");
 }
+
+// لما يحصل navigation، جدد قيمة الـ token
+router.afterEach(() => {
+  token.value = localStorage.getItem("token");
+});
+
+
+window.addEventListener("storage", () => {
+  token.value = localStorage.getItem("token")
+})
 </script>
 
 <template>
@@ -33,10 +41,13 @@ function logout(){
       <v-toolbar-title @click="$router.push('/dashboard')" style="cursor: pointer;">Telda</v-toolbar-title>
 
       <v-spacer></v-spacer>
-
-      <v-btn v-if="!isLoggedIn" text to="/login" router>Login</v-btn>
-      <v-btn v-if="!isLoggedIn" text to="/signup" router>Sign Up</v-btn>
-      <v-btn v-else text @click="logout">Logout</v-btn>
+      <div v-if="!isLoggedIn">
+        <v-btn text to="/login" router>Login</v-btn>
+        <v-btn text to="/signup" router>Sign Up</v-btn>
+      </div>
+      <div v-else>
+          <v-btn text @click="logout">Logout</v-btn>
+      </div>
 
     </v-app-bar>
 

@@ -5,41 +5,46 @@ import Signup from '@/views/Signup.vue'
 import SendMoney from '@/views/SendMoney.vue'
 import Deposit from '@/views/Deposit.vue'
 import Withdraw from '@/views/Withdraw.vue'
+import { jwtDecode } from 'jwt-decode'
+import Transactions from '@/views/Transactions.vue'
+
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    {
-      path: '/login',
-      name: 'Login',
-      component: Login,
-    },
-    {
-      path: '/dashboard',
-      name: 'Dashboard',
-      component: Dashboard,
-    },
-    {
-      path: '/signup',
-      name: 'Signup',
-      component: Signup,
-    },
-    {
-      path: '/send',
-      name: 'sendMoney',
-      component: SendMoney,
-    },
-    {
-      path: '/deposit',
-      name: 'Deposit',
-      component: Deposit
-    },
-    {
-      path: '/withdraw',
-      name: 'WithdrawMoney',
-      component: Withdraw,
-    },
-  ],
+  { path: '/login', name: 'Login', component: Login },
+  { path: '/signup', name: 'Signup', component: Signup },
+  { path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: { requiresAuth: true } },
+  { path: '/send', name: 'sendMoney', component: SendMoney, meta: { requiresAuth: true } },
+  { path: '/deposit', name: 'Deposit', component: Deposit, meta: { requiresAuth: true } },
+  { path: '/withdraw', name: 'WithdrawMoney', component: Withdraw, meta: { requiresAuth: true } },
+  { path: '/transactions', name: 'Transactions', component: Transactions, meta: { requiresAuth: true } },
+]
+});
+
+router.beforeEach((to, from, next) => {
+
+  if(to.meta.requiresAuth) {
+    const token = localStorage.getItem("token");
+    if(!token){
+      return next('/login');
+    }
+
+    try {
+      const decoded = jwtDecode(token);
+      const isExpired = Date.now() >= decoded.exp * 1000;
+
+      if (isExpired) {
+        localStorage.removeItem("token");
+        return next('/login');
+      }
+    }catch (err) {
+        localStorage.removeItem("token");
+        return next('/login');
+    }
+  }
+
+  next();
 })
 
 export default router

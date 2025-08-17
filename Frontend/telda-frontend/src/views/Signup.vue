@@ -8,7 +8,7 @@
                         <v-form @submit.prevent="signup">
                             <v-text-field v-model="name" label="Name" required ></v-text-field>
                             <v-text-field v-model="email" label="Email" type="email" required ></v-text-field>
-                            <v-text-field v-model="password" label="Password" type="password" required ></v-text-field>
+                            <v-text-field v-model="password" label="Password" type="password" aria-required="true" ></v-text-field>
                             <v-btn color="primary" type="submit" class="mt-4" block>Sign Up</v-btn>
                         </v-form>
                     </v-card-text>
@@ -32,13 +32,25 @@ export default {
     },
     methods: {
         async signup() {
-            console.log("Form submitted:", this.form);
+
+            if (!this.name.trim() || !this.email.trim() || !this.password.trim()){
+                alert("Please fill all required fields");
+                return;
+            }
+
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(this.email)) {
+                alert("Please enter a valid email address");
+                return;
+            }
+
             try {
                 const response = await axios.post("http://localhost:8081/api/auth/signup", {
                     name: this.name,
                     email: this.email,
                     password: this.password
                 });
+
                 const token = response.data.token;
                 localStorage.setItem("token", token);
                 localStorage.setItem("name", this.name);
@@ -47,7 +59,7 @@ export default {
                 //Login(this.form.email, this.form.password);
             } catch (error) {
                 console.error("Signup Failed", error.response?.data || error.data);
-                alert("Signup Failed: " + (error.response?.data?.message || "Check your Details"));
+                alert("Signup Failed: " + (error.response?.data || "❌ Error during signup. Please try again."));
             }
 
         },

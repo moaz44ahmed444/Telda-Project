@@ -1,5 +1,6 @@
 package com.telda.telda_project.entity;
 
+import com.telda.telda_project.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +36,9 @@ public class User implements UserDetails {
 
     @Column(name = "balance")
     private Double balance = 0.0;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

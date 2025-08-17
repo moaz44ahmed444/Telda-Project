@@ -46,13 +46,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public  List<Transaction> getUserTransactions(User user) {
-        List<Transaction> sent = transactionRepository.findBySender(user);
-        List<Transaction> received = transactionRepository.findByReceiver(user);
 
-        List<Transaction> all = new ArrayList<>();
-        all.addAll(sent);
-        all.addAll(received);
-
-        return all;
+        return transactionRepository.findByUserInvolved(user);
     }
 }

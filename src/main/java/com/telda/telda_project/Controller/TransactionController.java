@@ -101,8 +101,8 @@ public class TransactionController {
         List<TransactionResponse> response = transactions.stream().map(tx ->
                 TransactionResponse.builder()
                         .transactionId(tx.getId())
-                        .senderId(tx.getSender().getId())
-                        .receiverId(tx.getReceiver().getId())
+                        .senderEmail(tx.getSender() != null ? tx.getSender().getEmail() : null)
+                        .receiverEmail(tx.getReceiver() != null ? tx.getReceiver().getEmail() : null)
                         .amount(tx.getAmount())
                         .type(tx.getType())
                         .timestamp(tx.getTimestamp())

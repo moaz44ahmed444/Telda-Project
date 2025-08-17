@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @Builder
 public class TransactionResponse {
     private Long transactionId;
-    private Long senderId;
-    private Long receiverId;
+    private String senderEmail;
+    private String receiverEmail;
     private Double amount;
     private TransactionType type;
     private LocalDateTime timestamp;
