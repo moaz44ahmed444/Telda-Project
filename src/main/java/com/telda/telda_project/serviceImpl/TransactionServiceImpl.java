@@ -32,7 +32,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+        return transactionRepository.findAllTransactions();
     }
 
     @Override
@@ -46,7 +46,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public  List<Transaction> getUserTransactions(User user) {
-
         return transactionRepository.findByUserInvolved(user);
     }
 }

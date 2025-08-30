@@ -29,7 +29,16 @@
                 <v-btn color="blue" block @click="$router.push('/send')">Send Money</v-btn>
               </v-col>
               <v-col cols="12" sm="6" md="3" >
-                <v-btn color="primary" block @click="$router.push('/transactions')">View Transactions</v-btn>
+                <v-btn color="primary" block @click="$router.push({path:'/transactions' , query: {mode : 'user'}})">History</v-btn>
+              </v-col>
+              <v-col cols="12" sm="6" md="4" v-if="role === 'ADMIN'">
+                <v-btn color="primary" block @click="$router.push({path:'/transactions' , query: {mode : 'all'}})">View all Transactions</v-btn>
+              </v-col>
+              <v-col cols="12" sm="6" md="4" v-if="role === 'ADMIN'">
+                <v-btn color="primary" block @click="$router.push('/transactions')">Manage Users</v-btn>
+              </v-col>
+              <v-col cols="12" sm="6" md="4" v-if="role === 'ADMIN'">
+                <v-btn color="primary" block @click="$router.push('/transactions')">Statistics / Reports</v-btn>
               </v-col>
             </v-row>
           </v-card-text>
@@ -41,6 +50,7 @@
 
 <script>
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -48,7 +58,8 @@ export default {
   data() {
     return {
       userName: "",
-      balance: 0
+      balance: 0,
+      role: ""
     };
   },
   async created() {
@@ -57,6 +68,11 @@ export default {
     console.log(localStorage.getItem("name"));
     // جلب الرصيد
     const token = localStorage.getItem("token");
+
+    // Get Role
+    const decoded = jwtDecode(token);
+    this.role = decoded.role;
+    console.log(this.role);
     try {
       const response = await axios.get("http://localhost:8081/api/user/balance", {
         headers: {

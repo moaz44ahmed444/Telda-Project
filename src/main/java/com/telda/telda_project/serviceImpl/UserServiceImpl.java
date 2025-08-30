@@ -38,4 +38,26 @@ public class UserServiceImpl implements UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    @Override
+    public List<User> getAllUsersForAdmin(){
+        return userRepository.findAllForAdmin();
+    }
+
+    public void activateUser(Long userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        if (!user.isActive()) {
+            user.setActive(true);
+            userRepository.save(user);
+        }
+    }
+
+    public void deactivateUser(Long userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.isActive()){
+            user.setActive(false);
+            userRepository.save(user);
+        }
+    }
 }

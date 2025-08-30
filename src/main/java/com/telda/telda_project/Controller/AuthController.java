@@ -5,6 +5,7 @@ import com.telda.telda_project.dto.AuthResponse;
 import com.telda.telda_project.dto.LoginRequest;
 import com.telda.telda_project.dto.LoginResponse;
 import com.telda.telda_project.entity.User;
+import com.telda.telda_project.enums.Role;
 import com.telda.telda_project.service.UserService;
 import com.telda.telda_project.serviceImpl.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,7 @@ public class AuthController {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .balance(0.0)
+                .role(Role.valueOf("CUSTOMER"))
                 .build();
 
         User  savedUser = userService.saveUser(newUser);

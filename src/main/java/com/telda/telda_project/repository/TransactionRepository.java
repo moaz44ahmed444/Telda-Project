@@ -13,6 +13,9 @@ public interface TransactionRepository extends JpaRepository<Transaction,Long> {
     List<Transaction> findByReceiver(User receiver);
     List<Transaction> findBySenderAndReceiver(User sender, User receiver);
 
+    @Query("select t from Transaction t ")
+    List<Transaction> findAllTransactions();
+
     @Query("select t from Transaction t where t.sender = :user OR t.receiver = :user")
     List<Transaction> findByUserInvolved(@Param("user") User user);
 }

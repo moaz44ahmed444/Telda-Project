@@ -57,6 +57,11 @@ export default {
     async mounted() {
         this.fetchTransactions();
     },
+    watch: {
+        '$route.query.mode'() {
+            this.fetchTransactions();
+        }
+    },
     methods: {
         async fetchTransactions(){
             this.loading = true;
@@ -66,8 +71,15 @@ export default {
             const decoded = jwtDecode(token);
             const email = decoded.sub || decoded.email;
 
+            let url = "";
+            if (this.$route.query.mode === 'all'){
+                url = "http://localhost:8081/api/admin/transactions/all";
+            }
+            else {
+                url = "http://localhost:8081/api/transaction/user/transactions";
+            }
             try{
-                const res = await axios.get("http://localhost:8081/api/transaction/user/transactions", {
+                const res = await axios.get( url, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

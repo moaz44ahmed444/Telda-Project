@@ -10,4 +10,7 @@ public interface UserService {
     Optional<User> getUserById(Long id);
     Optional<User> getUserByEmail(String email);
     List<User> getAllUsers();
+    List<User> getAllUsersForAdmin();
+    void activateUser(Long id);
+    void deactivateUser(Long id);
 }
