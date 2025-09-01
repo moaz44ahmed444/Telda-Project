@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUsersForAdmin(){
-        return userRepository.findAllForAdmin();
+        return userRepository.findAll();
     }
 
     public void activateUser(Long userId){
