@@ -3,13 +3,16 @@ package com.telda.telda_project.Controller;
 import com.telda.telda_project.dto.TransactionResponse;
 import com.telda.telda_project.entity.Transaction;
 import com.telda.telda_project.entity.User;
+import com.telda.telda_project.enums.Role;
 import com.telda.telda_project.service.TransactionService;
 import com.telda.telda_project.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -55,6 +58,16 @@ public class AdminController {
 
     @PutMapping("/users/{id}/deactivate")
     public ResponseEntity<String> deactivateUser(@PathVariable Long id){
+        User user = userService.getUserById(id).get();
+
+        if (user.getRole() == Role.ADMIN) {
+            return ResponseEntity.status(403).body("Cannot deactivate an Admin user");
+        }
+        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (user.getEmail().equals(currentEmail)) {
+            return ResponseEntity.status(403).body("You cannot deactivate your own account");
+        }
+
         userService.deactivateUser(id);
         return ResponseEntity.ok("User Deactivated Successfully");
     }

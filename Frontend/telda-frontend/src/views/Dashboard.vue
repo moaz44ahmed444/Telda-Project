@@ -35,7 +35,7 @@
                 <v-btn color="primary" block @click="$router.push({path:'/transactions' , query: {mode : 'all'}})">View all Transactions</v-btn>
               </v-col>
               <v-col cols="12" sm="6" md="4" v-if="role === 'ADMIN'">
-                <v-btn color="primary" block @click="$router.push('/transactions')">Manage Users</v-btn>
+                <v-btn color="primary" block @click="$router.push('/admin/users')">Manage Users</v-btn>
               </v-col>
               <v-col cols="12" sm="6" md="4" v-if="role === 'ADMIN'">
                 <v-btn color="primary" block @click="$router.push('/transactions')">Statistics / Reports</v-btn>
