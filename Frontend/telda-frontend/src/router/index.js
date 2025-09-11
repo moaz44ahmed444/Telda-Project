@@ -8,6 +8,7 @@ import Withdraw from '@/views/Withdraw.vue'
 import { jwtDecode } from 'jwt-decode'
 import Transactions from '@/views/Transactions.vue'
 import ManageUsers from '@/views/ManageUsers.vue'
+import EditProfile from '@/views/EditProfile.vue'
 
 
 const router = createRouter({
@@ -21,6 +22,7 @@ const router = createRouter({
   { path: '/withdraw', name: 'WithdrawMoney', component: Withdraw, meta: { requiresAuth: true } },
   { path: '/transactions', name: 'Transactions', component: Transactions, meta: { requiresAuth: true } },
   { path: '/admin/users', name: 'ManageUsers', component: ManageUsers, meta: { requiresAuth: true } },
+  { path: '/edit-profile', name: 'EditProfile', component: EditProfile, meta: { requiresAuth: true } },
 ]
 });
 

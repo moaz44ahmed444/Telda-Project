@@ -38,6 +38,9 @@ public class User implements UserDetails {
     @Column(name = "balance")
     private Double balance = 0.0;
 
+    @Column(name = "phone")
+    private String phone;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

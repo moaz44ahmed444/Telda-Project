@@ -3,9 +3,8 @@ package com.telda.telda_project.dto;
 import lombok.Data;
 
 @Data
-public class AuthRequest {
+public class UpdateUserProfileRequest {
     private String name;
     private String email;
     private String phone;
-    private String password;
 }

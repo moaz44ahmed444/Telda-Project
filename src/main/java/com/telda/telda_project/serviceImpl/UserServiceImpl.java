@@ -1,5 +1,6 @@
 package com.telda.telda_project.serviceImpl;
 
+import com.telda.telda_project.dto.UpdateUserProfileRequest;
 import com.telda.telda_project.entity.User;
 import com.telda.telda_project.repository.UserRepository;
 import com.telda.telda_project.service.UserService;
@@ -59,5 +60,16 @@ public class UserServiceImpl implements UserService {
             user.setActive(false);
             userRepository.save(user);
         }
+    }
+
+    @Override
+    public User updateUserProfile(String email, UpdateUserProfileRequest request) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (request.getName() != null) user.setName(request.getName());
+        if (request.getEmail() != null) user.setEmail(request.getEmail());
+        if (request.getPhone() != null) user.setPhone(request.getPhone());
+
+        return userRepository.save(user);
     }
 }

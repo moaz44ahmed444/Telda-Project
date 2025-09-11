@@ -44,6 +44,7 @@ public class AuthController {
         User newUser = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
+                .phone(request.getPhone())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .balance(0.0)
                 .role(Role.valueOf("CUSTOMER"))
